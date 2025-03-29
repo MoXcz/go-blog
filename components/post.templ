@@ -1,0 +1,11 @@
+package components
+
+import "github.com/MoXcz/go-blog/types"
+
+templ PostDetail(post types.Post, body templ.Component) {
+	@Base(post.Title) {
+		<div class="post-detail">
+			@body
+		</div>
+	}
+}

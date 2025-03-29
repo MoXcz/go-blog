@@ -1,0 +1,41 @@
+package components
+
+import "github.com/MoXcz/go-blog/types"
+
+templ PostList(posts []types.Post) {
+<div id="post-list" class="post-list">
+  if len(posts) > 0 {
+  for _, post := range posts {
+  <div class="post-item">
+    <h2><a href={ templ.SafeURL("/posts/" + post.Title) }>{ post.Title }</a></h2>
+    <p>{ post.Content }</p>
+  </div>
+  }
+  } else {
+  <p>No posts found</p>
+  }
+</div>
+}
+
+templ Posts(posts []types.Post) {
+@Base("Posts") {
+<div class="search">
+  <input type="search" name="search" hx-get="/search" hx-trigger="keyup
+      changed delay:0.5s" hx-target="#post-list" />
+</div>
+@PostList(posts)
+@CreatePostForm()
+}
+}
+
+templ CreatePostForm() {
+<div>
+  <form action="/create" method="post">
+    <label>Title</label>
+    <input type="text" name="title" required />
+    <label>Content</label>
+    <textarea name="content" required></textarea>
+    <button type="submit">Create</button>
+  </form>
+</div>
+}
