@@ -5,13 +5,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
 	"log"
 	"os"
 	"path"
 	"path/filepath"
 	"time"
 
+	"github.com/MoXcz/go-blog/internal/file"
 	"github.com/yuin/goldmark"
 )
 
@@ -82,78 +82,11 @@ func readFrontmatter(content []byte) (Meta, int) {
 	return m, idx + remainingSep
 }
 
-func CopyFile(src, dst string) error {
-	in, err := os.Open(src)
-	if err != nil {
-		return err
-	}
-	defer in.Close()
-
-	out, err := os.Create(dst)
-	if err != nil {
-		return err
-	}
-	defer func() {
-		cerr := out.Close()
-		if err == nil {
-			err = cerr
-		}
-	}()
-
-	_, err = io.Copy(out, in)
-	if err != nil {
-		return err
-	}
-
-	info, err := os.Stat(src)
-	if err != nil {
-		return err
-	}
-
-	return os.Chmod(dst, info.Mode())
-}
-
-func CopyDir(src, dst string) error {
-	return filepath.Walk(src, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-
-		rel, err := filepath.Rel(src, path)
-		if err != nil {
-			return err
-		}
-
-		target := filepath.Join(dst, rel)
-
-		if info.IsDir() {
-			return os.MkdirAll(target, info.Mode())
-		}
-
-		return CopyFile(path, target)
-	})
-}
-
-func ClearDir(dir string) error {
-	entries, err := os.ReadDir(dir)
-	if err != nil {
-		return err
-	}
-
-	for _, entry := range entries {
-		p := filepath.Join(dir, entry.Name())
-		if err := os.RemoveAll(p); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
 func (app *application) initializeBlog(rootPath string, posts []Post) error {
 	if err := os.Mkdir(rootPath, 0755); err != nil {
 		if errors.Is(err, os.ErrExist) {
 			fmt.Printf("%s already exists!\n", rootPath)
-			err = ClearDir(rootPath)
+			err = file.ClearDir(rootPath)
 			if err != nil {
 				return err
 			}
@@ -162,7 +95,7 @@ func (app *application) initializeBlog(rootPath string, posts []Post) error {
 		}
 	}
 
-	err := CopyDir("static/", rootPath+"static/")
+	err := file.CopyDir("static/", rootPath+"static/")
 	if err != nil {
 		return err
 	}
