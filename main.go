@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"flag"
 	"io"
 	"log"
 	"os"
@@ -18,15 +19,24 @@ type Post struct {
 	Content  string
 }
 
+type application struct {
+	root string
+}
+
 func main() {
-	readPosts()
+	root := flag.String("root", "", "root value to link static files")
+	flag.Parse()
+
+	app := &application{
+		root: *root,
+	}
 
 	posts, err := readPosts()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	err = initializeBlog("docs/", posts)
+	err = app.initializeBlog("docs/", posts)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -56,7 +66,7 @@ func main() {
 		content := Unsafe(buf.String())
 
 		// Use templ to render the template containing the raw HTML.
-		err = contentPage(post.Metadata.Title, content).Render(context.Background(), f)
+		err = contentPage(post.Metadata.Title, content, app.root).Render(context.Background(), f)
 		if err != nil {
 			log.Fatalf("failed to write output file: %v", err)
 		}

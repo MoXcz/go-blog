@@ -149,7 +149,7 @@ func ClearDir(dir string) error {
 	return nil
 }
 
-func initializeBlog(rootPath string, posts []Post) error {
+func (app *application) initializeBlog(rootPath string, posts []Post) error {
 	if err := os.Mkdir(rootPath, 0755); err != nil {
 		if errors.Is(err, os.ErrExist) {
 			fmt.Printf("%s already exists!\n", rootPath)
@@ -177,7 +177,7 @@ func initializeBlog(rootPath string, posts []Post) error {
 		}
 	}
 
-	err = indexPage(posts).Render(context.Background(), f)
+	err = indexPage(posts, app.root).Render(context.Background(), f)
 	if err != nil {
 		log.Fatalf("failed to write index page: %v", err)
 	}

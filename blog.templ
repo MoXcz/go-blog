@@ -3,10 +3,10 @@ package main
 import "path"
 import "github.com/gosimple/slug"
 
-templ headerComponent(title string) {
+templ headerComponent(title string, p string) {
 	<head>
     <title>{ title }</title>
-    <link rel="stylesheet" href="static/bootstrap.min.css" />
+    <link rel="stylesheet" href={ templ.SafeURL(path.Join("/", p, "/static/bootstrap.min.css")) } />
   </head>
 }
 
@@ -19,22 +19,22 @@ templ contentComponent(title string, body templ.Component) {
 	</body>
 }
 
-templ contentPage(title string, body templ.Component) {
+templ contentPage(title string, body templ.Component, p string) {
 	<html>
-		@headerComponent(title)
+		@headerComponent(title, p)
 		@contentComponent(title, body)
 	</html>
 }
 
-templ indexPage(posts []Post) {
+templ indexPage(posts []Post, p string) {
 	<html>
-		@headerComponent("My Blog")
+    <ol class="breadcrumb p-3">
+      <li class="breadcrumb-item"><a href="#">home</a></li>
+      <li class="breadcrumb-item active"><a href="/">oscar</a></li>
+    </ol>
+		@headerComponent("My Blog", p)
 		<body class="container text-center">
 			<h1>My Blog</h1>
-      <ol class="breadcrumb p-3">
-        <li class="breadcrumb-item"><a href="#">home</a></li>
-        <li class="breadcrumb-item active"><a href="/">oscar</a></li>
-      </ol>
 			for _, post := range posts {
 				<div><a href={ templ.SafeURL(path.Join(post.Metadata.Date.Format("2006/01/02"), slug.Make(post.Metadata.Title), "/")) }>{ post.Metadata.Title }</a></div>
 			}
