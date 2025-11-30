@@ -4,13 +4,17 @@ import "path"
 import "github.com/gosimple/slug"
 
 templ headerComponent(title string) {
-	<head><title>{ title }</title></head>
+	<head>
+    <title>{ title }</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="/static/bootstrap.min.css" />
+  </head>
 }
 
 templ contentComponent(title string, body templ.Component) {
 	<body>
 		<h1>{ title }</h1>
-		<div class="content">
+		<div class="container">
 			@body
 		</div>
 	</body>
@@ -26,8 +30,12 @@ templ contentPage(title string, body templ.Component) {
 templ indexPage(posts []Post) {
 	<html>
 		@headerComponent("My Blog")
-		<body>
+		<body class="container text-center">
 			<h1>My Blog</h1>
+      <ol class="breadcrumb p-3">
+        <li class="breadcrumb-item"><a href="#">home</a></li>
+        <li class="breadcrumb-item active"><a href="/">oscar</a></li>
+      </ol>
 			for _, post := range posts {
 				<div><a href={ templ.SafeURL(path.Join(post.Metadata.Date.Format("2006/01/02"), slug.Make(post.Metadata.Title), "/")) }>{ post.Metadata.Title }</a></div>
 			}
