@@ -1,4 +1,4 @@
-<html><head><title>Go generics in action</title><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="/static/bootstrap.min.css"></head><body><h1>Go generics in action</h1><div class="container"><p>Generics in Go arrived really late on version 1.18, and with reason, as its <em>usage should be reserved strictly when necessary</em>. There's very few cases when making use of a generic makes sense, for example an <code>assert</code>-like type of function:</p>
+<html><head><title>Go generics in action</title><link rel="stylesheet" href="static/bootstrap.min.css"></head><body><h1>Go generics in action</h1><div class="container"><p>Generics in Go arrived really late on version 1.18, and with reason, as its <em>usage should be reserved strictly when necessary</em>. There's very few cases when making use of a generic makes sense, for example an <code>assert</code>-like type of function:</p>
 <pre><code class="language-go">func Equal[T comparable](t *testing.T, actual, expected T) {
 	t.Helper()
 
