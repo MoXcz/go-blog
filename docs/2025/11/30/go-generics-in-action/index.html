@@ -1,0 +1,28 @@
+<html><head><title>Go generics in action</title></head><body><h1>Go generics in action</h1><div class="content"><p>Generics in Go arrived really late on version 1.18, and with reason, as its <em>usage should be reserved strictly when necessary</em>. There's very few cases when making use of a generic makes sense, for example an <code>assert</code>-like type of function:</p>
+<pre><code class="language-go">func Equal[T comparable](t *testing.T, actual, expected T) {
+	t.Helper()
+
+	if actual != expected {
+		t.Errorf(&quot;got: %v; want: %v&quot;, actual, expected)
+	}
+}
+</code></pre>
+<blockquote>
+<p><code>t.Helper()</code> <em>returns</em> the error back up to the caller to avoid showing the <code>file:line</code> error message on this function</p>
+</blockquote>
+<p>A useless example, but that helps explain type restriction:</p>
+<pre><code class="language-go">func SumIntsOrFloats[K comparable, V int64 | float64](m map[K]V) V {
+    var s V
+    for _, v := range m {
+        s += v
+    }
+    return s
+}
+</code></pre>
+<p>Note that <code>comparable</code> is just an interface similar to this one:</p>
+<pre><code class="language-go">type Number interface {
+    int64 | float64
+}
+</code></pre>
+<p>Which just helps <em>restrict</em> the kind of values this generic can be.</p>
+</div></body></html>
