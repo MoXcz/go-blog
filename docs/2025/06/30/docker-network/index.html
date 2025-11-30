@@ -1,0 +1,100 @@
+<html><head><title>Docker network</title><link rel="stylesheet" href="/go-blog/static/bootstrap.min.css"><link rel="stylesheet" href="/go-blog/static/style.css"></head><body class="article-container"><nav><ol class="breadcrumb p-3"><li class="breadcrumb-item"><a href="#">home</a></li><li class="breadcrumb-item active"><a href="/">oscar</a></li><li class="breadcrumb-item active"><a href="/go-blog/2025">2025</a></li><li class="breadcrumb-item active"><a href="/go-blog/2025/6">June</a></li><li class="breadcrumb-item active">30</li><li class="breadcrumb-item active"><a href="/go-blog/2025/6/30/Docker network">Docker network</a></li></ol></nav><main><h1 class="fw-bold display-5 display-md-3">Docker network</h1><h2>What is a container</h2>
+<p>Containers offer an abstraction that facilitates isolation between processes:</p>
+<ul>
+<li><em>Chroot</em>. Short for <em>change root</em>, <code>chroot</code> can be used to <em>jail</em> processes by isolating them into their own <em>root</em>: isolates files, but processes are still visible.</li>
+<li><em>Namespaces</em>. Isolates the process itself to <em>limit their access</em> without the process being aware of this limitation: isolates processes, but resources are still shared.</li>
+<li><em>Cgroups</em>. Isolate environment resources and avoid memory leak problems: isolate resources.</li>
+</ul>
+<p>The purpose of a container is to be able to run applications without having to simulate a <em>hardware interface</em> to do so, that is, without needing <em>another computer</em> (or abstraction of a computer under a virtual machine). Which is why this <em>isolation</em> is necessary, as everything is performed under the same computer/device.</p>
+<h2>What is Docker</h2>
+<p>Docker is used for <em>containerization</em> of applications, which are like lightweight virtual machines <em>with batteries included</em> (libraries, executables, and any other dependencies may be needed).</p>
+<p>{{&lt; image src=&quot;/img/docker.svg&quot; alt=&quot;docker-infrastructure&quot; position=&quot;center&quot; &gt;}}</p>
+<p>Just to ease in how Docker works, there are 3 main components of Docker: the <strong>daemon</strong> (the actual program), the <strong>GUI</strong> (graphical interface), and the <strong>CLI</strong> (command line interface).</p>
+<p>The instructions below are provided using the CLI, but they should be easy to replicate using the GUI if that's preferred.</p>
+<h3>Installation</h3>
+<p>Installing Docker is fairly simple, just follow the <a href="https://docs.docker.com/engine/install/#supported-platforms">Docker documentation</a>. In my case that I'm on Debian I could do this:</p>
+<pre tabindex="0" style="color:#ebdbb2;background-color:#282828;"><code><span style="display:flex;"><span>curl -O https://desktop.docker.com/linux/main/amd64/docker-desktop-amd64.deb
+</span></span><span style="display:flex;"><span>sudo apt install ./docker-desktop-amd64.deb
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#928374;font-style:italic"># And then just enable/start the daemon</span>
+</span></span><span style="display:flex;"><span>systemctl --user <span style="color:#fabd2f">enable</span> docker-desktop
+</span></span><span style="display:flex;"><span>systemctl --user start docker-desktop
+</span></span><span style="display:flex;"><span><span style="color:#928374;font-style:italic"># Verify that it was installed correctly</span>
+</span></span><span style="display:flex;"><span>docker version
+</span></span></code></pre><h2>Docker applications</h2>
+<p>But how are these containers created? There are some <em>images</em> which provide instructions in how to <em>build</em> the container so that it can be started:</p>
+<pre tabindex="0" style="color:#ebdbb2;background-color:#282828;"><code><span style="display:flex;"><span><span style="color:#928374;font-style:italic"># this will download the image (if it&#39;s not installed)</span>
+</span></span><span style="display:flex;"><span><span style="color:#928374;font-style:italic"># provided by nginx and start the container of that image</span>
+</span></span><span style="display:flex;"><span>docker run -it --rm --name nginx -p 8080:8080 nginx:latest
+</span></span></code></pre><p>Now, if you open your browser in <a href="http://localhost:8080">localhost:8080</a> you should be able to see the welcome page provided by the nginx web server.</p>
+<p>This is where one might start to see how <em>awesome</em> containers can be. Nginx could also have been installed locally, but that would require not only some extra steps but probably some extra knowledge in the tooling (which in this case is not as hard to install/configure, but I digress).</p>
+<h2>Docker networks</h2>
+<p>The <em>network</em> in this context refers to how to use these <em>containers</em> inside a network from within the container abstraction and outside it from the host machine (as seen with the nginx web server).</p>
+<p>Fortunately, Docker already has some pretty neat networks by default: <code>bridge</code>, <code>host</code>, and <code>none</code> that can be used to explain how networks are managed inside containers.</p>
+<pre tabindex="0" style="color:#ebdbb2;background-color:#282828;"><code><span style="display:flex;"><span>docker network ls <span style="color:#928374;font-style:italic"># list the networks</span>
+</span></span></code></pre><p>When first installing Docker an interface called <code>docker0</code> is created, which is used as the default <code>bridge</code> network as mentioned above.</p>
+<pre tabindex="0" style="color:#ebdbb2;background-color:#282828;"><code><span style="display:flex;"><span>netstat -i <span style="color:#928374;font-style:italic"># see the interfaces in your system</span>
+</span></span><span style="display:flex;"><span>ip a       <span style="color:#928374;font-style:italic"># should also work</span>
+</span></span></code></pre><p>In the following examples of how these networks work I will be using an image that I <em>constructed</em> by providing the following instructions inside a file called <code>Dockerfile</code>:</p>
+<pre tabindex="0" style="color:#ebdbb2;background-color:#282828;"><code><span style="display:flex;"><span><span style="color:#fe8019">FROM</span><span style="color:#b8bb26"> golang:1.24-alpine</span>
+</span></span><span style="display:flex;"><span><span style="color:#fe8019">WORKDIR</span><span style="color:#b8bb26"> /app</span>
+</span></span><span style="display:flex;"><span><span style="color:#fe8019">COPY</span> . .
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fe8019">RUN</span> go build -o server .
+</span></span><span style="display:flex;"><span><span style="color:#fe8019">RUN</span> apk add --no-cache curl
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fe8019">EXPOSE</span><span style="color:#b8bb26"> 8080</span>
+</span></span><span style="display:flex;"><span><span style="color:#fe8019">CMD</span> [<span style="color:#b8bb26">&#34;./server&#34;</span>, <span style="color:#b8bb26">&#34;-addr=:8080&#34;</span>]
+</span></span></code></pre><p>This will just build and start a Go server. You can also use this application by <em>cloning</em> the repository as seen below:</p>
+<pre tabindex="0" style="color:#ebdbb2;background-color:#282828;"><code><span style="display:flex;"><span>git clone https://github.com/MoXcz/docker-network-practice
+</span></span><span style="display:flex;"><span><span style="color:#fabd2f">cd</span> docker-network-practice
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>docker build . -t srv-test
+</span></span><span style="display:flex;"><span>docker run -it --rm --name srv -p 8080:8080 srv-test
+</span></span><span style="display:flex;"><span><span style="color:#928374;font-style:italic"># open a new terminal and issue a GET request</span>
+</span></span><span style="display:flex;"><span>curl localhost:8080
+</span></span></code></pre><p>Or, just visit <a href="http://localhost:8080">localhost:8080</a> inside a browser just like with nginx.</p>
+<p>The <em>response</em> (either in the browser or the terminal) should be something like <code>Hi from :8080 (hostname: da12f89eac4d IP: [172.17.0.2])</code>.</p>
+<p>The number after <code>hostname:</code> is the <em>container id</em>, which you can see using <code>docker ps</code> while the container is still running. The IP is assigned by Docker using the <em>default <code>bridge</code> network</em>.</p>
+<h3>But, what is a <code>bridge</code>?</h3>
+<p>{{&lt; image src=&quot;/img/bridge-networks.svg&quot; alt=&quot;bridge-networks&quot; position=&quot;center&quot; &gt;}}</p>
+<p>A <em>bridge</em> is used as a literal bridge between different device (or groups of devices) found inside a network.</p>
+<p>In the case of Docker the bridge is between the containers and the host:</p>
+<p>{{&lt; image src=&quot;/img/docker-bridge.svg&quot; alt=&quot;docker-bridge&quot; position=&quot;center&quot; &gt;}}</p>
+<blockquote>
+<p>Note: To reset the state of the containers just stop (<code>docker stop &lt;container_id&gt;</code> and start them again <code>docker run</code>)</p>
+</blockquote>
+<h2><code>bridge</code></h2>
+<p>So, this means that the <code>bridge</code> exists within its own private network that is then accessed through the host by <em>mapping</em> the ports (done through the <code>-p</code> option).</p>
+<pre tabindex="0" style="color:#ebdbb2;background-color:#282828;"><code><span style="display:flex;"><span>docker run -d --rm --name srv-1 -p 8080:8080 srv-test
+</span></span><span style="display:flex;"><span>docker run -d --rm --name srv-2 -p 8081:8080 srv-test
+</span></span></code></pre><p>This will initialize two containers in the <code>bridge</code> network. This means that <em>both containers are in the same network</em>, which should made them visible to one another:</p>
+<pre tabindex="0" style="color:#ebdbb2;background-color:#282828;"><code><span style="display:flex;"><span>docker exec -it srv-1 sh
+</span></span><span style="display:flex;"><span>/app # curl localhost:8080
+</span></span><span style="display:flex;"><span>Hi from :8080 (hostname: e4067bc988c3 IP: [172.17.0.2])
+</span></span><span style="display:flex;"><span>/app # curl localhost:8081
+</span></span><span style="display:flex;"><span>curl: (7) Failed to connect to localhost port 8081 after 0 ms: Could not connect to server
+</span></span></code></pre><p>What happened? <code>localhost</code> references the host, which when inside a container <em>the container is the host</em>, so <code>srv-1</code> does not know anything about <code>srv-2</code> <em>inside itself</em>, it knows there's a network (<code>bridge</code>).</p>
+<p>So what can we do? Be more <em>specific</em> and get access through the network:</p>
+<pre tabindex="0" style="color:#ebdbb2;background-color:#282828;"><code><span style="display:flex;"><span>docker network inspect bridge <span style="color:#928374;font-style:italic"># get IPs of containers</span>
+</span></span></code></pre><p>By using the IP of the container directly (remember that both are on the same <code>bridge</code> network) <code>srv-1</code> can make requests to <code>srv-2</code> (in this case its IP is <code>172.17.0.3</code>):</p>
+<pre tabindex="0" style="color:#ebdbb2;background-color:#282828;"><code><span style="display:flex;"><span>docker exec -it srv-1 sh
+</span></span><span style="display:flex;"><span>/app # curl localhost:8080
+</span></span><span style="display:flex;"><span>Hi from :8080 (hostname: e4067bc988c3 IP: [172.17.0.2])
+</span></span><span style="display:flex;"><span>/app # curl 172.17.0.3:8080
+</span></span><span style="display:flex;"><span>Hi from :8080 (hostname: 6f8382a402b7 IP: [172.17.0.3])
+</span></span></code></pre><h3>Container IPs?</h3>
+<p>IP, the Internet Protocol, is used as a sort of <em>address</em> to recognize different devices. In the case of Docker, it creates a subnet in <code>172.17.0.0/16</code>, which is just a way of saying that the IPs (addresses) are delimited by this <em>subnet</em>.</p>
+<p>Which is why the containers above return <code>172.17.0.2</code> and <code>172.17.0.3</code>.</p>
+<p>Also, similar to the previous containers, these two can also be accessed through the host:</p>
+<pre tabindex="0" style="color:#ebdbb2;background-color:#282828;"><code><span style="display:flex;"><span>curl localhost:8080
+</span></span><span style="display:flex;"><span>curl localhost:8081
+</span></span></code></pre><p>But what if we don't want the containers to be accesible from the host? Enter the <code>none</code> network.</p>
+<h2><code>none</code></h2>
+<p>When creating a container it's always assigned to <code>bridge</code> even if it's not <em>mapped</em> to the host:</p>
+<pre tabindex="0" style="color:#ebdbb2;background-color:#282828;"><code><span style="display:flex;"><span>docker run -d --rm --name srv-3 srv-test
+</span></span><span style="display:flex;"><span>docker exec -it srv-1 sh
+</span></span><span style="display:flex;"><span>curl 172.17.0.4:8080
+</span></span><span style="display:flex;"><span>Hi from :8080 (hostname: 52225705d65a IP: [172.17.0.4])
+</span></span></code></pre><p>But if we try to access the container from outside the network in the host there are no ways to access</p>
+</main></body></html>

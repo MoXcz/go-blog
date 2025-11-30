@@ -1,0 +1,145 @@
+.article-container {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 1rem;
+  text-align: justify;
+}
+
+.article-container p {
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+.article-container code {
+  font-size: 0.95rem;
+}
+
+.article-container pre {
+  padding: 0.8rem;
+  border-radius: 8px;
+}
+
+.article-container blockquote {
+  font-size: 1rem;
+  padding-left: 1rem;
+  border-left: 4px solid #dee2e6;
+  color: #555;
+}
+
+.article-container h1 {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.article-container h2 {
+  font-size: 1.6rem;
+  font-weight: 600;
+}
+
+.article-container h3 {
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+/* ---------------------------------------
+   ≥ 768px (tablets / small laptops)
+----------------------------------------- */
+@media (min-width: 768px) {
+  .article-container {
+    max-width: 760px;
+    padding: 1rem;
+  }
+
+  .article-container p {
+    font-size: 1.05rem;
+  }
+
+  .article-container code {
+    font-size: 0.9rem;
+  }
+
+  .article-container blockquote {
+    font-size: 1.05rem;
+  }
+
+  .article-container h1 {
+    font-size: 2.4rem;
+  }
+
+  .article-container h2 {
+    font-size: 1.9rem;
+  }
+
+  .article-container h3 {
+    font-size: 1.5rem;
+  }
+}
+
+/* ---------------------------------------
+   ≥ 992px (desktops)
+----------------------------------------- */
+@media (min-width: 992px) {
+  .article-container {
+    max-width: 820px;
+    padding: 1.2rem;
+  }
+
+  .article-container p {
+    font-size: 1.1rem;
+  }
+
+  .article-container code {
+    font-size: 0.95rem;
+  }
+
+  .article-container blockquote {
+    font-size: 1.1rem;
+  }
+
+  .article-container h1 {
+    font-size: 2.8rem;
+  }
+
+  .article-container h2 {
+    font-size: 2.1rem;
+  }
+
+  .article-container h3 {
+    font-size: 1.7rem;
+  }
+}
+
+/* ---------------------------------------
+   ≥ 1200px (large desktops)
+----------------------------------------- */
+@media (min-width: 1200px) {
+  .article-container {
+    max-width: 880px;
+    padding: 1.5rem;
+  }
+
+  .article-container p {
+    font-size: 1.15rem;
+  }
+
+  .article-container code {
+    font-size: 1rem;
+  }
+
+  .article-container blockquote {
+    font-size: 1.15rem;
+  }
+
+  .article-container h1 {
+    font-size: 3.1rem;
+  }
+
+  .article-container h2 {
+    font-size: 2.3rem;
+  }
+
+  .article-container h3 {
+    font-size: 1.9rem;
+  }
+}

@@ -12,6 +12,9 @@ import (
 	"github.com/a-h/templ"
 	"github.com/gosimple/slug"
 	"github.com/yuin/goldmark"
+	highlighting "github.com/yuin/goldmark-highlighting/v2"
+	"github.com/yuin/goldmark/extension"
+	"github.com/yuin/goldmark/renderer/html"
 )
 
 type Post struct {
@@ -24,6 +27,20 @@ type application struct {
 }
 
 func main() {
+	md := goldmark.New(
+		goldmark.WithExtensions(
+			extension.GFM, // GitHub-style markdown
+			highlighting.NewHighlighting(
+				highlighting.WithStyle("gruvbox"),
+				highlighting.WithGuessLanguage(true),
+			),
+		),
+		goldmark.WithRendererOptions(
+			html.WithHardWraps(),
+			html.WithXHTML(),
+		),
+	)
+
 	root := flag.String("root", "", "root value to link static files")
 	flag.Parse()
 
@@ -58,7 +75,7 @@ func main() {
 
 		// Convert the markdown to HTML, and pass it to the template.
 		var buf bytes.Buffer
-		if err := goldmark.Convert([]byte(post.Content), &buf); err != nil {
+		if err := md.Convert([]byte(post.Content), &buf); err != nil {
 			log.Fatalf("failed to convert markdown to HTML: %v", err)
 		}
 
@@ -66,7 +83,7 @@ func main() {
 		content := Unsafe(buf.String())
 
 		// Use templ to render the template containing the raw HTML.
-		err = contentPage(post.Metadata.Title, content, app.root).Render(context.Background(), f)
+		err = contentPage(post.Metadata.Title, content, app.root, post.Metadata.Date).Render(context.Background(), f)
 		if err != nil {
 			log.Fatalf("failed to write output file: %v", err)
 		}

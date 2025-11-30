@@ -1,43 +1,71 @@
 package main
 
-import "path"
-import "github.com/gosimple/slug"
+import (
+  "path"
+  "time"
+  "fmt"
+
+  "github.com/gosimple/slug"
+)
 
 templ headerComponent(title string, p string) {
 	<head>
     <title>{ title }</title>
     <link rel="stylesheet" href={ templ.SafeURL(path.Join("/", p, "/static/bootstrap.min.css")) } />
+    <link rel="stylesheet" href={ templ.SafeURL(path.Join("/", p, "/static/style.css")) } />
   </head>
 }
 
 templ contentComponent(title string, body templ.Component) {
-	<body>
-		<h1>{ title }</h1>
-		<div class="container">
-			@body
-		</div>
-	</body>
+  <main>
+    <h1 class="fw-bold display-5 display-md-3">{ title }</h1>
+    @body
+  </main>
 }
 
-templ contentPage(title string, body templ.Component, p string) {
+templ nav(p string, date *time.Time, post string) {
+  <nav>
+    <ol class="breadcrumb p-3">
+      <li class="breadcrumb-item"><a href="#">home</a></li>
+      <li class="breadcrumb-item active"><a href="/">oscar</a></li>
+      if date != nil {
+        {{
+          year := fmt.Sprintf("%d", date.Year())
+          month := fmt.Sprintf("%d", date.Month())
+          day := fmt.Sprintf("%d", date.Day())
+        }}
+        <li class="breadcrumb-item active"><a href={ templ.SafeURL(path.Join("/", p, year)) }>{ date.Year() }</a></li>
+        <li class="breadcrumb-item active"><a href={ templ.SafeURL(path.Join("/", p, year, month)) }>{ date.Month() }</a></li>
+        <li class="breadcrumb-item active">{ date.Day() }</li>
+        if post != "" {
+          <li class="breadcrumb-item active"><a href={ templ.SafeURL(path.Join("/", p, year, month, day, post)) }>{ post }</a></li>
+        }
+      }
+    </ol>
+  </nav>
+}
+
+templ contentPage(title string, body templ.Component, root string, date time.Time) {
 	<html>
-		@headerComponent(title, p)
-		@contentComponent(title, body)
+		@headerComponent(title, root)
+    <body class="article-container">
+      @nav(root, &date, title)
+      @contentComponent(title, body)
+    </body>
 	</html>
 }
 
 templ indexPage(posts []Post, p string) {
 	<html>
-    <ol class="breadcrumb p-3">
-      <li class="breadcrumb-item"><a href="#">home</a></li>
-      <li class="breadcrumb-item active"><a href="/">oscar</a></li>
-    </ol>
 		@headerComponent("My Blog", p)
-		<body class="container text-center">
-			<h1>My Blog</h1>
-			for _, post := range posts {
-				<div><a href={ templ.SafeURL(path.Join(post.Metadata.Date.Format("2006/01/02"), slug.Make(post.Metadata.Title), "/")) }>{ post.Metadata.Title }</a></div>
-			}
+		<body class="article-container">
+      @nav(p, nil, "")
+      <main class="text-center">
+        <h1 class="fw-bold display-5 display-md-3">My Blog</h1>
+        for _, post := range posts {
+          <div><a href={ templ.SafeURL(path.Join(post.Metadata.Date.Format("2006/01/02"), slug.Make(post.Metadata.Title), "/")) }>{ post.Metadata.Title }</a></div>
+        }
+      </main>
 		</body>
 	</html>
 }
