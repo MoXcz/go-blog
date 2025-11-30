@@ -1,18 +1,16 @@
 .article-container {
   width: 100%;
-  max-width: 720px;
   margin: 0 auto;
-  padding: 1rem;
-  text-align: justify;
+  padding: 1.5rem;
 }
 
 .article-container p {
-  font-size: 1rem;
+  font-size: 1.15rem;
   line-height: 1.65;
 }
 
 .article-container code {
-  font-size: 0.95rem;
+  font-size: 1.05rem;
 }
 
 .article-container pre {
@@ -28,17 +26,17 @@
 }
 
 .article-container h1 {
-  font-size: 2rem;
+  font-size: 2.1rem;
   font-weight: 700;
 }
 
 .article-container h2 {
-  font-size: 1.6rem;
+  font-size: 1.7rem;
   font-weight: 600;
 }
 
 .article-container h3 {
-  font-size: 1.3rem;
+  font-size: 1.4rem;
   font-weight: 600;
 }
 
@@ -47,20 +45,21 @@
 ----------------------------------------- */
 @media (min-width: 768px) {
   .article-container {
-    max-width: 760px;
     padding: 1rem;
   }
 
-  .article-container p {
-    font-size: 1.05rem;
+  .article-container p,
+  .article-container nav,
+  .article-container div {
+    font-size: 1.6rem;
   }
 
   .article-container code {
-    font-size: 0.9rem;
+    font-size: 1.45rem;
   }
 
   .article-container blockquote {
-    font-size: 1.05rem;
+    font-size: 1.5rem;
   }
 
   .article-container h1 {
@@ -68,11 +67,11 @@
   }
 
   .article-container h2 {
-    font-size: 1.9rem;
+    font-size: 2.1rem;
   }
 
   .article-container h3 {
-    font-size: 1.5rem;
+    font-size: 2rem;
   }
 }
 

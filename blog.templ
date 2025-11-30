@@ -18,7 +18,7 @@ templ headerComponent(title string, p string) {
 
 templ contentComponent(title string, body templ.Component) {
   <main>
-    <h1 class="fw-bold display-5 display-md-3">{ title }</h1>
+    <h1 class="fw-bold display-5">{ title }</h1>
     @body
   </main>
 }
@@ -27,7 +27,7 @@ templ nav(p string, date *time.Time, post string) {
   <nav>
     <ol class="breadcrumb p-3">
       <li class="breadcrumb-item"><a href="#">home</a></li>
-      <li class="breadcrumb-item active"><a href="/">oscar</a></li>
+      <li class="breadcrumb-item active"><a href={ templ.SafeURL(path.Join("/", p)) }>mocos</a></li>
       if date != nil {
         {{
           year := fmt.Sprintf("%d", date.Year())
@@ -61,7 +61,7 @@ templ indexPage(posts []Post, p string) {
 		<body class="article-container">
       @nav(p, nil, "")
       <main class="text-center">
-        <h1 class="fw-bold display-5 display-md-3">My Blog</h1>
+        <h1 class="fw-bold display-5">My Blog</h1>
         for _, post := range posts {
           <div><a href={ templ.SafeURL(path.Join(post.Metadata.Date.Format("2006/01/02"), slug.Make(post.Metadata.Title), "/")) }>{ post.Metadata.Title }</a></div>
         }
