@@ -11,34 +11,41 @@ import (
 templ headerComponent(title string, p string) {
 	<head>
     <title>{ title }</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta charset="utf-8">
     <link rel="stylesheet" href={ templ.SafeURL(path.Join("/", p, "/static/bootstrap.min.css")) } />
     <link rel="stylesheet" href={ templ.SafeURL(path.Join("/", p, "/static/style.css")) } />
+    <script src={ templ.SafeURL(path.Join("/", p, "/static/main.js")) } defer></script>
   </head>
 }
 
-templ contentComponent(title string, body templ.Component) {
+templ contentComponent(title string, body templ.Component, date time.Time) {
   <main>
-    <h1 class="fw-bold display-5">{ title }</h1>
-    @body
+    <content>
+    {{
+      dateTime := date.Format("02-01-2006")
+      dateText := date.Format("Monday, 02 January 2006")
+     }}
+      <h1 class="fw-bold display-5">{ title }</h1>
+      <span><i><time datetime={dateTime}>{dateText}</time></i></span>
+      @body
+    </content>
   </main>
 }
 
-templ nav(p string, date *time.Time, post string) {
+templ nav(p string, post string, date *time.Time) {
   <nav>
     <ol class="breadcrumb p-3">
       <li class="breadcrumb-item"><a href="#">home</a></li>
       <li class="breadcrumb-item active"><a href={ templ.SafeURL(path.Join("/", p)) }>mocos</a></li>
-      if date != nil {
+      if date != nil && post != "" {
         {{
           year := fmt.Sprintf("%d", date.Year())
           month := fmt.Sprintf("%d", date.Month())
           day := fmt.Sprintf("%d", date.Day())
         }}
-        <li class="breadcrumb-item active"><a href={ templ.SafeURL(path.Join("/", p, year)) }>{ date.Year() }</a></li>
-        <li class="breadcrumb-item active"><a href={ templ.SafeURL(path.Join("/", p, year, month)) }>{ date.Month() }</a></li>
-        <li class="breadcrumb-item active">{ date.Day() }</li>
         if post != "" {
-          <li class="breadcrumb-item active"><a href={ templ.SafeURL(path.Join("/", p, year, month, day, post)) }>{ post }</a></li>
+          <li class="breadcrumb-item active"><a href={ templ.SafeURL(path.Join("/", p, year, month, day, slug.Make(post))) }>{ slug.Make(post) }</a></li>
         }
       }
     </ol>
@@ -49,8 +56,8 @@ templ contentPage(title string, body templ.Component, root string, date time.Tim
 	<html>
 		@headerComponent(title, root)
     <body class="article-container">
-      @nav(root, &date, title)
-      @contentComponent(title, body)
+      @nav(root, title, &date)
+      @contentComponent(title, body, date)
     </body>
 	</html>
 }
@@ -59,7 +66,7 @@ templ indexPage(posts []Post, p string) {
 	<html>
 		@headerComponent("My Blog", p)
 		<body class="article-container">
-      @nav(p, nil, "")
+      @nav(p, "", nil)
       <main class="text-center">
         <h1 class="fw-bold display-5">My Blog</h1>
         for _, post := range posts {

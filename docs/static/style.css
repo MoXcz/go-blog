@@ -1,16 +1,56 @@
-.article-container {
-  width: 100%;
-  margin: 0 auto;
-  padding: 1.5rem;
+/* 
+ * https://github.com/janraasch/hugo-bearblog/blob/master/layouts/partials/style.html
+ */
+:root {
+  --width: 720px;
+  --font-main: Verdana, sans-serif;
+  --font-secondary: Verdana, sans-serif;
+  --font-scale: 0.9em;
+  --background-color: #fff;
+  --heading-color: #222;
+  --text-color: #444;
+  --link-color: #3273dc;
+  --visited-color: #8b6fcb;
+  --blockquote-color: #222;
 }
 
-.article-container p {
-  font-size: 1.15rem;
-  line-height: 1.65;
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background-color: #0f0f0f;
+    --heading-color: #eee;
+    --text-color: #ddd;
+    --link-color: #fe8019;
+    --visited-color: #8b6fcb;
+    --blockquote-color: #ccc;
+  }
 }
 
-.article-container code {
-  font-size: 1.05rem;
+/* Manual light mode */
+.theme-light {
+  --background-color: #fff;
+  --heading-color: #222;
+  --text-color: #444;
+}
+
+/* Manual dark mode */
+.theme-dark {
+  --background-color: #01242e;
+  --heading-color: #eee;
+  --text-color: #ddd;
+}
+
+body {
+  font-family: var(--font-secondary);
+  font-size: var(--font-scale);
+  margin: auto;
+  padding: 20px;
+  max-width: var(--width);
+  text-align: left;
+  background-color: var(--background-color);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.5;
+  color: var(--text-color);
 }
 
 .article-container pre {
@@ -19,126 +59,21 @@
 }
 
 .article-container blockquote {
-  font-size: 1rem;
   padding-left: 1rem;
   border-left: 4px solid #dee2e6;
   color: #555;
 }
 
-.article-container h1 {
-  font-size: 2.1rem;
-  font-weight: 700;
+a:visited {
+  color: var(--visited-color);
 }
 
-.article-container h2 {
-  font-size: 1.7rem;
-  font-weight: 600;
+a {
+  color: var(--link-color);
+  cursor: pointer;
+  text-decoration: none;
 }
 
-.article-container h3 {
-  font-size: 1.4rem;
-  font-weight: 600;
-}
-
-/* ---------------------------------------
-   ≥ 768px (tablets / small laptops)
------------------------------------------ */
-@media (min-width: 768px) {
-  .article-container {
-    padding: 1rem;
-  }
-
-  .article-container p,
-  .article-container nav,
-  .article-container div {
-    font-size: 1.6rem;
-  }
-
-  .article-container code {
-    font-size: 1.45rem;
-  }
-
-  .article-container blockquote {
-    font-size: 1.5rem;
-  }
-
-  .article-container h1 {
-    font-size: 2.4rem;
-  }
-
-  .article-container h2 {
-    font-size: 2.1rem;
-  }
-
-  .article-container h3 {
-    font-size: 2rem;
-  }
-}
-
-/* ---------------------------------------
-   ≥ 992px (desktops)
------------------------------------------ */
-@media (min-width: 992px) {
-  .article-container {
-    max-width: 820px;
-    padding: 1.2rem;
-  }
-
-  .article-container p {
-    font-size: 1.1rem;
-  }
-
-  .article-container code {
-    font-size: 0.95rem;
-  }
-
-  .article-container blockquote {
-    font-size: 1.1rem;
-  }
-
-  .article-container h1 {
-    font-size: 2.8rem;
-  }
-
-  .article-container h2 {
-    font-size: 2.1rem;
-  }
-
-  .article-container h3 {
-    font-size: 1.7rem;
-  }
-}
-
-/* ---------------------------------------
-   ≥ 1200px (large desktops)
------------------------------------------ */
-@media (min-width: 1200px) {
-  .article-container {
-    max-width: 880px;
-    padding: 1.5rem;
-  }
-
-  .article-container p {
-    font-size: 1.15rem;
-  }
-
-  .article-container code {
-    font-size: 1rem;
-  }
-
-  .article-container blockquote {
-    font-size: 1.15rem;
-  }
-
-  .article-container h1 {
-    font-size: 3.1rem;
-  }
-
-  .article-container h2 {
-    font-size: 2.3rem;
-  }
-
-  .article-container h3 {
-    font-size: 1.9rem;
-  }
+a:hover {
+  text-decoration: underline;
 }
